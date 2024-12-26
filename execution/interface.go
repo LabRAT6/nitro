@@ -35,6 +35,7 @@ type ExecutionClient interface {
 	HeadMessageNumber() containers.PromiseInterface[arbutil.MessageIndex]
 	HeadMessageNumberSync(t *testing.T) containers.PromiseInterface[arbutil.MessageIndex]
 	ResultAtPos(pos arbutil.MessageIndex) containers.PromiseInterface[*MessageResult]
+	MarkFeedStart(to arbutil.MessageIndex) containers.PromiseInterface[struct{}]
 }
 
 // needed for validators / stakers
@@ -56,7 +57,6 @@ type ExecutionSequencer interface {
 	ForwardTo(url string) error
 	SequenceDelayedMessage(message *arbostypes.L1IncomingMessage, delayedSeqNum uint64) error
 	NextDelayedMessageNumber() (uint64, error)
-	MarkFeedStart(to arbutil.MessageIndex)
 	Synced() bool
 	FullSyncProgressMap() map[string]interface{}
 }
