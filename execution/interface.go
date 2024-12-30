@@ -35,7 +35,7 @@ type ExecutionClient interface {
 	ResultAtPos(pos arbutil.MessageIndex) containers.PromiseInterface[*MessageResult]
 	MarkFeedStart(to arbutil.MessageIndex) containers.PromiseInterface[struct{}]
 
-	Maintenance() error
+	Maintenance() containers.PromiseInterface[struct{}]
 }
 
 // needed for validators / stakers

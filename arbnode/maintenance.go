@@ -183,7 +183,8 @@ func (mr *MaintenanceRunner) runMaintenance() {
 	}
 	expected++
 	go func() {
-		results <- mr.exec.Maintenance()
+		_, res := mr.exec.Maintenance().Await(mr.GetContext())
+		results <- res
 	}()
 	for i := 0; i < expected; i++ {
 		err := <-results

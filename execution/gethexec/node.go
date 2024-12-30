@@ -461,8 +461,12 @@ func (n *ExecutionNode) MessageIndexToBlockNumber(messageNum arbutil.MessageInde
 	return n.ExecEngine.MessageIndexToBlockNumber(messageNum)
 }
 
-func (n *ExecutionNode) Maintenance() error {
-	return n.ChainDB.Compact(nil, nil)
+func (n *ExecutionNode) Maintenance() containers.PromiseInterface[struct{}] {
+	compactWithReturn := func() (struct{}, error) {
+		err := n.ChainDB.Compact(nil, nil)
+		return struct{}{}, err
+	}
+	return containers.NewReadyPromise(compactWithReturn())
 }
 
 func (n *ExecutionNode) Synced() bool {
@@ -541,7 +545,7 @@ func (n *ExecutionClientImpl) Start(ctx context.Context) error {
 func (n *ExecutionClientImpl) StopAndWait() {
 	n.ExecutionNode.StopAndWait()
 }
-func (n *ExecutionClientImpl) Maintenance() error {
+func (n *ExecutionClientImpl) Maintenance() containers.PromiseInterface[struct{}] {
 	return n.ExecutionNode.Maintenance()
 }
 func (n *ExecutionClientImpl) ArbOSVersionForMessageNumber(messageNum arbutil.MessageIndex) (uint64, error) {
