@@ -1292,7 +1292,7 @@ func (n *Node) Start(ctx context.Context) error {
 	}
 	if n.SeqCoordinator != nil {
 		n.SeqCoordinator.Start(ctx)
-	} else {
+	} else if n.ExecutionSequencer != nil {
 		n.ExecutionSequencer.Activate()
 	}
 	if n.MaintenanceRunner != nil {
