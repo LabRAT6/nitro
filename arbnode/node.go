@@ -263,6 +263,7 @@ type Node struct {
 	Stack                   *node.Node
 	ExecutionClient         execution.ExecutionClient
 	ExecutionSequencer      execution.ExecutionSequencer
+	ExecutionRecorder       execution.ExecutionRecorder
 	L1Reader                *headerreader.HeaderReader
 	TxStreamer              *TransactionStreamer
 	DeployInfo              *chaininfo.RollupAddresses
@@ -919,6 +920,7 @@ func getNodeParentChainReaderDisabled(
 	stack *node.Node,
 	executionClient execution.ExecutionClient,
 	executionSequencer execution.ExecutionSequencer,
+	executionRecorder execution.ExecutionRecorder,
 	txStreamer *TransactionStreamer,
 	blobReader daprovider.BlobReader,
 	broadcastServer *broadcaster.Broadcaster,
@@ -933,6 +935,7 @@ func getNodeParentChainReaderDisabled(
 		Stack:                   stack,
 		ExecutionClient:         executionClient,
 		ExecutionSequencer:      executionSequencer,
+		ExecutionRecorder:       executionRecorder,
 		L1Reader:                nil,
 		TxStreamer:              txStreamer,
 		DeployInfo:              nil,
@@ -1020,7 +1023,7 @@ func createNodeImpl(
 	}
 
 	if !config.ParentChainReader.Enable {
-		return getNodeParentChainReaderDisabled(ctx, arbDb, stack, executionClient, executionSequencer, txStreamer, blobReader, broadcastServer, broadcastClients, coordinator, maintenanceRunner, syncMonitor, configFetcher), nil
+		return getNodeParentChainReaderDisabled(ctx, arbDb, stack, executionClient, executionSequencer, executionRecorder, txStreamer, blobReader, broadcastServer, broadcastClients, coordinator, maintenanceRunner, syncMonitor, configFetcher), nil
 	}
 
 	delayedBridge, sequencerInbox, err := getDelayedBridgeAndSequencerInbox(deployInfo, l1client)
@@ -1068,6 +1071,7 @@ func createNodeImpl(
 		Stack:                   stack,
 		ExecutionClient:         executionClient,
 		ExecutionSequencer:      executionSequencer,
+		ExecutionRecorder:       executionRecorder,
 		L1Reader:                l1Reader,
 		TxStreamer:              txStreamer,
 		DeployInfo:              deployInfo,
