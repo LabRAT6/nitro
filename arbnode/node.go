@@ -596,6 +596,8 @@ func getDAS(
 }
 
 func getInboxTrackerAndReader(
+	ctx context.Context,
+	exec execution.ExecutionSequencer,
 	arbDb ethdb.Database,
 	txStreamer *TransactionStreamer,
 	dapReaders []daprovider.Reader,
@@ -613,10 +615,14 @@ func getInboxTrackerAndReader(
 	}
 	firstMessageBlock := new(big.Int).SetUint64(deployInfo.DeployedAt)
 	if config.SnapSyncTest.Enabled {
+		if exec == nil {
+			return nil, nil, errors.New("snap sync test requires an execution sequencer")
+		}
+
 		batchCount := config.SnapSyncTest.BatchCount
 		delayedMessageNumber, err := exec.NextDelayedMessageNumber()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		if batchCount > delayedMessageNumber {
 			batchCount = delayedMessageNumber
@@ -629,7 +635,7 @@ func getInboxTrackerAndReader(
 		}
 		block, err := FindBlockContainingBatchCount(ctx, deployInfo.Bridge, l1client, config.SnapSyncTest.ParentChainAssertionBlock, batchCount)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		firstMessageBlock.SetUint64(block)
 	}
@@ -1036,7 +1042,7 @@ func createNodeImpl(
 		return nil, err
 	}
 
-	inboxTracker, inboxReader, err := getInboxTrackerAndReader(arbDb, txStreamer, dapReaders, config, configFetcher, l1client, l1Reader, deployInfo, delayedBridge, sequencerInbox)
+	inboxTracker, inboxReader, err := getInboxTrackerAndReader(ctx, executionSequencer, arbDb, txStreamer, dapReaders, config, configFetcher, l1client, l1Reader, deployInfo, delayedBridge, sequencerInbox)
 	if err != nil {
 		return nil, err
 	}
