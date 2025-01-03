@@ -37,8 +37,8 @@ type ExecutionClient interface {
 
 	Maintenance() containers.PromiseInterface[struct{}]
 
-	Start(ctx context.Context) error
-	StopAndWait()
+	Start(ctx context.Context) containers.PromiseInterface[struct{}]
+	StopAndWait() containers.PromiseInterface[struct{}]
 }
 
 // needed for validators / stakers
